@@ -6,19 +6,35 @@ import 'package:painter_ebook/pages/painters_tab_page.dart';
 import 'package:painter_ebook/services/home_bgm_controller.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({
+    super.key,
+    required this.isDarkMode,
+    required this.onToggleDarkMode,
+  });
+
+  final bool isDarkMode;
+  final VoidCallback onToggleDarkMode;
 
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 4,
-      child: _HomePageShell(),
+      child: _HomePageShell(
+        isDarkMode: isDarkMode,
+        onToggleDarkMode: onToggleDarkMode,
+      ),
     );
   }
 }
 
 class _HomePageShell extends StatefulWidget {
-  const _HomePageShell();
+  const _HomePageShell({
+    required this.isDarkMode,
+    required this.onToggleDarkMode,
+  });
+
+  final bool isDarkMode;
+  final VoidCallback onToggleDarkMode;
 
   @override
   State<_HomePageShell> createState() => _HomePageShellState();
@@ -76,6 +92,13 @@ class _HomePageShellState extends State<_HomePageShell> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Painter E-Book'),
+        actions: [
+          IconButton(
+            tooltip: widget.isDarkMode ? '切換為日間模式' : '切換為深夜模式',
+            onPressed: widget.onToggleDarkMode,
+            icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+          ),
+        ],
         bottom: const TabBar(
           tabs: [
             Tab(text: 'Home'),
