@@ -96,9 +96,13 @@ class MuseumDetailPage extends StatelessWidget {
                         subtitle: artwork.title,
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute<void>(
-                            builder: (_) =>
-                                PainterDetailPage(painter: painter),
+                          PageRouteBuilder<void>(
+                            transitionDuration: const Duration(milliseconds: 260),
+                            reverseTransitionDuration: const Duration(milliseconds: 220),
+                            pageBuilder: (context, animation, secondaryAnimation) => FadeTransition(
+                              opacity: animation,
+                              child: PainterDetailPage(painter: painter),
+                            ),
                           ),
                         ),
                       );

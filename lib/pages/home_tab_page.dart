@@ -34,8 +34,13 @@ class HomeTabPage extends StatelessWidget {
                 painter: painter,
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => PainterDetailPage(painter: painter),
+                  PageRouteBuilder(
+                    transitionDuration: const Duration(milliseconds: 260),
+                    reverseTransitionDuration: const Duration(milliseconds: 220),
+                    pageBuilder: (context, animation, secondaryAnimation) => FadeTransition(
+                      opacity: animation,
+                      child: PainterDetailPage(painter: painter),
+                    ),
                   ),
                 ),
               );

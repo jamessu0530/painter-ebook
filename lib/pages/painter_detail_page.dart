@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:painter_ebook/models/painter.dart';
+import 'package:painter_ebook/services/home_bgm_controller.dart';
 import 'package:painter_ebook/widgets/artwork_image.dart';
 
 class PainterDetailPage extends StatefulWidget {
@@ -14,8 +15,6 @@ class PainterDetailPage extends StatefulWidget {
 
 class _PainterDetailPageState extends State<PainterDetailPage> {
   final AudioPlayer _player = AudioPlayer();
-  bool _isMuted = false;
-  bool _audioReady = false;
 
   static const Map<String, String> _audioByPainter = {
     'rembrandt': 'assets/audio/rembrandt.m4a',
@@ -33,6 +32,7 @@ class _PainterDetailPageState extends State<PainterDetailPage> {
   @override
   void initState() {
     super.initState();
+    HomeBgmController.pause();
     _initAudio();
   }
 
@@ -51,26 +51,7 @@ class _PainterDetailPageState extends State<PainterDetailPage> {
       await _player.setAsset(asset);
       await _player.setLoopMode(LoopMode.one);
       await _player.play();
-      if (mounted) setState(() => _audioReady = true);
-    } catch (_) {
-      if (mounted) setState(() => _audioReady = false);
-    }
-  }
-
-  Future<void> _togglePlayPause() async {
-    if (!_audioReady) return;
-    if (_player.playing) {
-      await _player.pause();
-    } else {
-      await _player.play();
-    }
-  }
-
-  Future<void> _toggleMute() async {
-    if (!_audioReady) return;
-    final nextMuted = !_isMuted;
-    await _player.setVolume(nextMuted ? 0 : 1);
-    if (mounted) setState(() => _isMuted = nextMuted);
+    } catch (_) {}
   }
 
   static const Map<String, Map<String, String>> _artworkIntros = {
@@ -196,6 +177,7 @@ class _PainterDetailPageState extends State<PainterDetailPage> {
   void dispose() {
     _player.stop();
     _player.dispose();
+    HomeBgmController.play();
     super.dispose();
   }
 
@@ -208,24 +190,6 @@ class _PainterDetailPageState extends State<PainterDetailPage> {
             expandedHeight: 320,
             pinned: true,
             surfaceTintColor: Colors.transparent,
-            actions: [
-              StreamBuilder<PlayerState>(
-                stream: _player.playerStateStream,
-                builder: (context, snapshot) {
-                  final playing = snapshot.data?.playing ?? false;
-                  return IconButton(
-                    tooltip: playing ? 'Pause music' : 'Play music',
-                    onPressed: _audioReady ? _togglePlayPause : null,
-                    icon: Icon(playing ? Icons.pause_circle : Icons.play_circle),
-                  );
-                },
-              ),
-              IconButton(
-                tooltip: _isMuted ? 'Unmute' : 'Mute',
-                onPressed: _audioReady ? _toggleMute : null,
-                icon: Icon(_isMuted ? Icons.volume_off : Icons.volume_up),
-              ),
-            ],
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               title: Text(
