@@ -42,26 +42,27 @@ class _HomePageShellState extends State<_HomePageShell> {
     _tabController?.removeListener(_handleTabChange);
     _tabController = next;
     _tabController?.addListener(_handleTabChange);
+    _syncBgmWithCurrentTab();
   }
 
   Future<void> _initBgm() async {
     try {
       await HomeBgmController.init();
-      await HomeBgmController.play();
       if (mounted) setState(() => _bgmReady = true);
+      _syncBgmWithCurrentTab();
     } catch (_) {
       if (mounted) setState(() => _bgmReady = false);
     }
   }
 
-  void _handleTabChange() {
+  void _syncBgmWithCurrentTab() {
     final controller = _tabController;
-    if (!_bgmReady || controller == null || controller.indexIsChanging) return;
-    if (controller.index == 0) {
-      HomeBgmController.play();
-    } else {
-      HomeBgmController.pause();
-    }
+    if (!_bgmReady || controller == null) return;
+    HomeBgmController.play();
+  }
+
+  void _handleTabChange() {
+    _syncBgmWithCurrentTab();
   }
 
   @override
