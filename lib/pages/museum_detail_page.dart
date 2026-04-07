@@ -19,6 +19,31 @@ class MuseumDetailPage extends StatelessWidget {
     return null;
   }
 
+  static String _normalizeWorkTitle(String input) {
+    final lower = input.toLowerCase();
+    return lower.replaceAll(RegExp(r'[^a-z0-9]+'), '');
+  }
+
+  static String _imageForArtwork(Painter painter, String museumArtworkTitle) {
+    final target = _normalizeWorkTitle(museumArtworkTitle);
+    if (target.isEmpty) return painter.heroImageUrl;
+
+    final famous = painter.famousWorks;
+    if (famous.isNotEmpty) {
+      final first = _normalizeWorkTitle(famous[0]);
+      if (first.contains(target) || target.contains(first)) {
+        return painter.heroImageUrl;
+      }
+    }
+    if (famous.length > 1) {
+      final second = _normalizeWorkTitle(famous[1]);
+      if (second.contains(target) || target.contains(second)) {
+        return painter.galleryImageUrl;
+      }
+    }
+    return painter.heroImageUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +119,7 @@ class MuseumDetailPage extends StatelessWidget {
                       return FeaturedPainterCard(
                         painter: painter,
                         subtitle: artwork.title,
+                        imageUrl: _imageForArtwork(painter, artwork.title),
                         onTap: () => Navigator.push(
                           context,
                           PageRouteBuilder<void>(

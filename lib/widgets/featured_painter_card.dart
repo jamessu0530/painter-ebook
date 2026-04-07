@@ -8,12 +8,14 @@ class FeaturedPainterCard extends StatelessWidget {
 
   /// When set (e.g. museum artwork title), shown instead of [Painter.famousWorks.first].
   final String? subtitle;
+  final String? imageUrl;
 
   const FeaturedPainterCard({
     super.key,
     required this.painter,
     required this.onTap,
     this.subtitle,
+    this.imageUrl,
   });
 
   @override
@@ -29,7 +31,7 @@ class FeaturedPainterCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               ArtworkImage(
-                imageUrl: painter.heroImageUrl,
+                imageUrl: imageUrl ?? painter.heroImageUrl,
                 fit: BoxFit.cover,
               ),
               DecoratedBox(
