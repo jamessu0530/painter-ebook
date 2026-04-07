@@ -326,14 +326,6 @@ class _PainterDetailPageState extends State<PainterDetailPage> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '提示：點上方 Hero 圖或 Gallery 圖可看對應作品說明。',
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 12.5,
-                    ),
-                  ),
                   const SizedBox(height: 14),
                   TextButton.icon(
                     onPressed: () => Navigator.pop(context),
