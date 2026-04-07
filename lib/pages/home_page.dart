@@ -5,23 +5,43 @@ import 'package:painter_ebook/pages/home_tab_page.dart';
 import 'package:painter_ebook/pages/painters_tab_page.dart';
 import 'package:painter_ebook/services/home_bgm_controller.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return const DefaultTabController(
+      length: 4,
+      child: _HomePageShell(),
+    );
+  }
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+class _HomePageShell extends StatefulWidget {
+  const _HomePageShell();
+
+  @override
+  State<_HomePageShell> createState() => _HomePageShellState();
+}
+
+class _HomePageShellState extends State<_HomePageShell> {
+  TabController? _tabController;
   bool _bgmReady = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(_handleTabChange);
     _initBgm();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final next = DefaultTabController.of(context);
+    if (_tabController == next) return;
+    _tabController?.removeListener(_handleTabChange);
+    _tabController = next;
+    _tabController?.addListener(_handleTabChange);
   }
 
   Future<void> _initBgm() async {
@@ -35,8 +55,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   void _handleTabChange() {
-    if (!_bgmReady || _tabController.indexIsChanging) return;
-    if (_tabController.index == 0) {
+    final controller = _tabController;
+    if (!_bgmReady || controller == null || controller.indexIsChanging) return;
+    if (controller.index == 0) {
       HomeBgmController.play();
     } else {
       HomeBgmController.pause();
@@ -45,8 +66,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
-    _tabController.removeListener(_handleTabChange);
-    _tabController.dispose();
+    _tabController?.removeListener(_handleTabChange);
     super.dispose();
   }
 
@@ -55,19 +75,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return Scaffold(
       appBar: AppBar(
         title: const Text('Painter E-Book'),
-        bottom: TabBar(
-          controller: _tabController,
-            tabs: [
-              Tab(text: 'Home'),
-              Tab(text: 'Painters'),
-              Tab(text: 'Gallery'),
-              Tab(text: 'Museum'),
-            ],
+        bottom: const TabBar(
+          tabs: [
+            Tab(text: 'Home'),
+            Tab(text: 'Painters'),
+            Tab(text: 'Gallery'),
+            Tab(text: 'Museum'),
+          ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
+      body: const TabBarView(
+        children: [
           HomeTabPage(),
           PaintersTabPage(),
           GalleryTabPage(),
