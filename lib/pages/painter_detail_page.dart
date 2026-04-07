@@ -300,31 +300,30 @@ class _PainterDetailPageState extends State<PainterDetailPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    clipBehavior: Clip.antiAlias,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        InkWell(
+                  Text('畫家的畫', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 260,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 2,
+                      separatorBuilder: (context, index) => const SizedBox(width: 14),
+                      itemBuilder: (context, index) {
+                        final isHero = index == 0;
+                        final imageUrl = isHero
+                            ? widget.painter.heroImageUrl
+                            : widget.painter.galleryImageUrl;
+                        final workTitle = widget.painter.famousWorks[index];
+                        return _PainterWorkCard(
+                          imageUrl: imageUrl,
+                          painterName: widget.painter.name,
+                          workTitle: workTitle,
                           onTap: () => _showImageIntro(
-                            title: widget.painter.famousWorks.first,
-                            intro: _introForWork(widget.painter.famousWorks.first),
+                            title: workTitle,
+                            intro: _introForWork(workTitle),
                           ),
-                          child: ArtworkImage(
-                            imageUrl: widget.painter.galleryImageUrl,
-                            height: 180,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            '作品註記：${widget.painter.famousWorks.first}',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -346,6 +345,80 @@ class _PainterDetailPageState extends State<PainterDetailPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PainterWorkCard extends StatelessWidget {
+  const _PainterWorkCard({
+    required this.imageUrl,
+    required this.painterName,
+    required this.workTitle,
+    required this.onTap,
+  });
+
+  final String imageUrl;
+  final String painterName;
+  final String workTitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 238,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ArtworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+              ),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.0),
+                      Colors.black.withValues(alpha: 0.62),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      painterName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      workTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
