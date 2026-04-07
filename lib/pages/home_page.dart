@@ -15,8 +15,6 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Painter E-Book'),
           bottom: const TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
             tabs: [
               Tab(text: 'Home'),
               Tab(text: 'Painters'),
